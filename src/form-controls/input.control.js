@@ -3,6 +3,7 @@ const validationStates = require('../validation-states');
 const StandardError = require('../standard-error.class');
 const ValidityStateAdapter = require('../validty-state-adapter.class');
 const {ExtraValidationStack, ErrorsStack} = require('../stacks');
+const cssClasses = require('../css-classes');
 const {
     validateState,
     clearErrorLabels,
@@ -126,7 +127,12 @@ class InputControl {
         validateState(state, validationStates);
         _validationState.set(this, state);
         Object.values(validationStates).forEach(s => _element.get(this).classList.remove(s));
+        _element.get(this).parentNode.classList.remove(cssClasses.parentNodeIsInvalid);
+        _element.get(this).parentNode.classList.remove(cssClasses.parentNodeIsValid);
         _element.get(this).classList.add(state);
+        state === validationStates.INVALID ?
+            _element.get(this).parentNode.classList.add(cssClasses.parentNodeIsInvalid) :
+            _element.get(this).parentNode.classList.add(cssClasses.parentNodeIsValid);
     }
 
     /**
@@ -166,7 +172,12 @@ class InputControl {
             return false;
         }
 
-        const result = ruleObject.validator.call(this, _element.get(this).value, _element.get(this), _element.get(this).getAttribute(ruleObject.attr));
+        const result = ruleObject.validator.call(
+            this,
+            _element.get(this).value,
+            _element.get(this),
+            _element.get(this).getAttribute(ruleObject.attr)
+        );
 
         if (result instanceof StandardError) {
             _errorsStack.get(this).push(result);
@@ -191,7 +202,8 @@ class InputControl {
 
         // Assign custom validation errors
         const extraValidationStack = _extraValidationStack.get(this);
-        extraValidationStack.length && extraValidationStack.forEach(ruleObject => this[_validateWithExtraValidator](ruleObject) && (valid = false));
+        extraValidationStack.length && extraValidationStack.forEach(ruleObject =>
+            this[_validateWithExtraValidator](ruleObject) && (valid = false));
 
         if (!valid) {
             const validity = _element.get(this).validity;
@@ -212,6 +224,7 @@ class InputControl {
 
     /**
      * @desc Make control clear
+     * todo: implement correctly
      */
     reset() {
         // Clear errors stack

@@ -17,7 +17,6 @@ const _formElem = new WeakMap();
 const _stackControls = new WeakMap();
 const _extraValidationStack = new WeakMap();
 // Private methods
-const _setup = Symbol();
 const _initFormControls = Symbol();
 const _assignEvents = Symbol();
 const _handleSubmit = Symbol();
@@ -40,17 +39,14 @@ class PcFormValidator {
         // Init extra validation stack
         _extraValidationStack.set(this, new ExtraValidationStack());
 
+        // Add novalidate attribute to the form
+        setNovalidateAttribute(_formElem.get(this));
+
         // Prepare form
-        this[_setup]();
+        this[_initFormControls]();
 
         // Assign events
         this[_assignEvents]();
-    }
-
-    [_setup]() {
-        // Add novalidate attribute to the form element
-        setNovalidateAttribute(_formElem.get(this));
-        this[_initFormControls]();
     }
 
     // Assign form events
@@ -64,14 +60,15 @@ class PcFormValidator {
     }
 
     [_initControl](control) {
-        switch (control.type) {
-            case controlTypes.EMAIL:
-                return _stackControls.get(this).push(new InputEmailControl(control));
-            case controlTypes.CHECKBOX:
-                return _stackControls.get(this).push(new InputCheckboxControl(control));
-            default:
-                return _stackControls.get(this).push(new InputControl(control, _extraValidationStack.get(this)));
-        }
+        // switch (control.type) {
+        //     case controlTypes.EMAIL:
+        //         return _stackControls.get(this).push(new InputEmailControl(control));
+        //     case controlTypes.CHECKBOX:
+        //         return _stackControls.get(this).push(new InputCheckboxControl(control));
+        //     default:
+        //         return _stackControls.get(this).push(new InputControl(control, _extraValidationStack.get(this)));
+        // }
+        _stackControls.get(this).push(new InputControl(control, _extraValidationStack.get(this)));
     }
 
     [_handleSubmit](event) {

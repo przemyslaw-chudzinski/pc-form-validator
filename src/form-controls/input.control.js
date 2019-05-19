@@ -3,6 +3,11 @@ const validationStates = require('../validation-states');
 const StandardError = require('../standard-error.class');
 const ValidityStateAdapter = require('../validty-state-adapter.class');
 const {ExtraValidationStack, ErrorsStack} = require('../stacks');
+const {
+    validateState,
+    clearErrorLabels,
+    createErrorLabel
+} = require('./form-control-support');
 // Private members
 const _element = new WeakMap();
 const _controlState = new WeakMap();
@@ -15,15 +20,12 @@ const _assignEvents = Symbol();
 const _handleKeyup = Symbol();
 const _handleBlur = Symbol();
 const _setControlState = Symbol();
-const _validateControlState = Symbol();
 const _checkIsCandidateForValidation = Symbol();
 const _setValidationState = Symbol();
-const _validateValidationState = Symbol();
 const _renderErrors = Symbol();
 const _handleInput = Symbol();
 const _canApplyValidator = Symbol();
 const _clearValidation = Symbol();
-const _clearLabels = Symbol();
 const _validateWithExtraValidator = Symbol();
 
 class InputControl {
@@ -94,39 +96,16 @@ class InputControl {
     /**
      * @desc Setter for control state
      * @param state
-     * todo: extract
      */
     [_setControlState](state) {
         // check passed state is valid
-        this[_validateControlState](state);
+        validateState(state, controlStates);
         // Assign current state
         _controlState.set(this, state);
         // Clear previous css classes
         Object.values(controlStates).forEach(c => _element.get(this).classList.remove(c));
         // Add fresh css class
         _element.get(this).classList.add(state);
-    }
-
-    /**
-     * @desc Validates control state is correct
-     * @param state
-     */
-    [_validateControlState](state) {
-        const result = Object.values(controlStates).some(s => s === state);
-        if (!result) {
-            throw new Error('wrong state has been passed');
-        }
-    }
-
-    /**
-     * @desc Validates validation state is correct
-     * @param state
-     */
-    [_validateValidationState](state) {
-        const result = Object.values(validationStates).some(s => s === state);
-        if (!result) {
-            throw new Error('wrong validation state has been passed');
-        }
     }
 
     /**
@@ -144,7 +123,7 @@ class InputControl {
      * @param state
      */
     [_setValidationState](state) {
-        this[_validateValidationState](state);
+        validateState(state, validationStates);
         _validationState.set(this, state);
         Object.values(validationStates).forEach(s => _element.get(this).classList.remove(s));
         _element.get(this).classList.add(state);
@@ -155,12 +134,7 @@ class InputControl {
      */
     [_renderErrors]() {
         const firstOne = _errorsStack.get(this).first();
-        if (firstOne) {
-            const errorLabel = document.createElement('span');
-            errorLabel.classList.add('error-label');
-            errorLabel.innerText = firstOne.message;
-            _element.get(this).parentNode.append(errorLabel);
-        }
+        firstOne && _element.get(this).parentNode.append(createErrorLabel(firstOne));
     }
 
     /**
@@ -179,15 +153,7 @@ class InputControl {
         // Clear errors stack
         _errorsStack.get(this).clear();
         // Remove error labels
-        this[_clearLabels]();
-    }
-
-    /**
-     * @desc Clears validation error labels
-     */
-    [_clearLabels]() {
-        const errorLabels = _element.get(this).parentNode.querySelectorAll('span.error-label');
-        errorLabels.length && [].forEach.call(errorLabels, lbl => lbl.remove());
+        clearErrorLabels(_element.get(this));
     }
 
     /**
@@ -207,7 +173,7 @@ class InputControl {
             return true;
         }
 
-        return false
+        return false;
     }
 
     // Public API
@@ -215,7 +181,6 @@ class InputControl {
     /**
      * @desc Validate control
      * @return {any}
-     * todo refactor
      */
     validate() {
         // Clear error stack and remove error labels
@@ -226,11 +191,7 @@ class InputControl {
 
         // Assign custom validation errors
         const extraValidationStack = _extraValidationStack.get(this);
-        extraValidationStack.length && extraValidationStack.forEach(ruleObject => {
-            if (this[_validateWithExtraValidator](ruleObject)) {
-                valid = false;
-            }
-        });
+        extraValidationStack.length && extraValidationStack.forEach(ruleObject => this[_validateWithExtraValidator](ruleObject) && (valid = false));
 
         if (!valid) {
             const validity = _element.get(this).validity;
@@ -255,10 +216,10 @@ class InputControl {
     reset() {
         // Clear errors stack
         _errorsStack.get(this).clear();
-        // Remove error lables
-        this[_clearLabels]();
+        // Remove error labels
+        clearErrorLabels(_element.get(this));
         // Sets appropriate states
-        // TODO: I dont know how to set. I will go over
+        // TODO: I dont know how to set it. I will go over
         // this[_setValidationState](validationStates.VALID);
         this[_setControlState](controlStates.PRISTINE);
 

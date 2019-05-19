@@ -1,5 +1,5 @@
 const StandardError = require('./standard-error.class');
-const ErrorsStack = require('./errors-stack.class');
+const {ErrorsStack} = require('./stacks');
 // Private members
 const _validity = new WeakMap();
 const _errors = new WeakMap();
@@ -10,6 +10,7 @@ const _getUserMessage = Symbol();
 
 class ValidityStateAdapter {
     constructor(validity, controlElement) {
+        // Validate entry values
         if (!(validity instanceof ValidityState)) {
             throw new Error('validity must be an instance of ValidityState interface');
         }
@@ -18,15 +19,21 @@ class ValidityStateAdapter {
             throw new Error('controlElement must be specified');
         }
 
+        // Init empty errors stack
         _errors.set(this, new ErrorsStack());
 
+        // Assign private members
         _validity.set(this, validity);
         _controlElement.set(this, controlElement);
 
+        // Checks validity object
         this[_check]();
 
     }
 
+    /**
+     * @desc Checks validity object
+     */
     [_check]() {
 
         const validity = _validity.get(this);
@@ -88,21 +95,28 @@ class ValidityStateAdapter {
 
     }
 
+    /**
+     * @desc Returns message which is displayed when control is invalid
+     * @param key
+     * @return {string}
+     */
     [_getUserMessage](key) {
         const data = _controlElement.get(this).dataset;
         let result = null;
         const index = 'message' + key.charAt(0).toUpperCase() + key.slice(1);
 
-        Object.keys(data).forEach(k => {
-            if (index === k) {
-                result = data[index];
-            }
-        });
+        // Finds message which is set by user and overwrite default
+        Object.keys(data).forEach(k => index === k && (result = data[index]));
+
         return result;
     }
 
     // Public API
 
+    /**
+     * @desc Returns errors stack
+     * @return {ErrorsStack}
+     */
     get errors() {
         return _errors.get(this);
     }

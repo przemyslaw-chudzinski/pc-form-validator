@@ -26,6 +26,7 @@
                        minlength="3"
                        maxlength="10"
                        data-message-required="To pole jest wymagane"
+                       noA="123"
                 >
 
             </div>
@@ -106,17 +107,17 @@
 
         const validator = new PcFormValidator('#testForm');
 
-        // validator.registerRule('#firstName', (value, control) => {
-        //
-        //
-        //     if (value.length === 2) {
-        //
-        //         return validator.support.StandardError('To pole jest gówniane');
-        //
-        //     }
-        //
-        //
-        // });
+        validator.registerRule('noA', (value, control, extra) => {
+
+            console.log('from client', value, control, extra);
+
+            if (value.includes('a')) {
+
+                return new validator.support.StandardError('To pole jest gówniane');
+
+            }
+
+        });
 
         // validator.setRule()
 

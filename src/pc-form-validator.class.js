@@ -1,12 +1,9 @@
-const controlTypes = require('./control-types');
 const validationStates = require('./validation-states');
 const controlStates = require('./control-states');
 const {ExtraValidationStack} = require('./stacks');
 const StandardError = require('./standard-error.class');
 const {
-    InputControl,
-    InputEmailControl,
-    InputCheckboxControl
+    InputControl
 } = require('./form-controls');
 const {
     getFormControls,
@@ -60,14 +57,6 @@ class PcFormValidator {
     }
 
     [_initControl](control) {
-        // switch (control.type) {
-        //     case controlTypes.EMAIL:
-        //         return _stackControls.get(this).push(new InputEmailControl(control));
-        //     case controlTypes.CHECKBOX:
-        //         return _stackControls.get(this).push(new InputCheckboxControl(control));
-        //     default:
-        //         return _stackControls.get(this).push(new InputControl(control, _extraValidationStack.get(this)));
-        // }
         _stackControls.get(this).push(new InputControl(control, _extraValidationStack.get(this)));
     }
 

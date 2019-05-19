@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Form Validator tests</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+
+    </style>
+</head>
+<body>
+
+    <div class="container mt-5">
+
+        <form id="testForm" action="" method="post">
+
+            <div class="form-group">
+
+                <label>First Name *</label>
+                <input class="form-control"
+                       id="firstName"
+                       type="text"
+                       name="firstName"
+                       data-form-control
+                       required
+                       minlength="3"
+                       maxlength="10"
+                       data-message-required="To pole jest wymagane"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Last Name</label>
+                <input class="form-control" type="text" name="lastName">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Email</label>
+                <input class="form-control"
+                       type="email"
+                       name="email"
+                       data-form-control
+                       required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Phone</label>
+                <input class="form-control"
+                       type="number"
+                       name="phone"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Subject</label>
+
+                <select class="form-control" name="subject" data-form-control required>
+
+                    <option value="">-- Choose subject --</option>
+                    <option value="1">Subject 1</option>
+                    <option value="2">Subject 2</option>
+                    <option value="3">Subject 3</option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+
+                    <input type="checkbox" name="agreement" data-form-control required>
+
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium aut delectus doloremque ea earum, eligendi enim est exercitationem incidunt itaque iusto laboriosam libero quaerat quisquam recusandae sequi ullam unde vitae!
+
+                </label>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Min and Max value</label>
+
+                <input class="form-control" type="number" name="agreement" data-form-control required min="4" max="5">
+
+
+            </div>
+
+            <button type="submit" class="btn btn-primary">Wyślij</button>
+
+        </form>
+
+    </div>
+
+    <script src="index.js"></script>
+    <script>
+
+        const validator = new PcFormValidator('#testForm');
+
+        // validator.registerRule('#firstName', (value, control) => {
+        //
+        //
+        //     if (value.length === 2) {
+        //
+        //         return validator.support.StandardError('To pole jest gówniane');
+        //
+        //     }
+        //
+        //
+        // });
+
+        // validator.setRule()
+
+    </script>
+</body>
+</html>

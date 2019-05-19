@@ -237,6 +237,14 @@ class InputControl {
         this[_setControlState](controlStates.PRISTINE);
 
     }
+
+    /**
+     * @desc Returns native element of the control
+     * @return {HTMLElement}
+     */
+    get nativeElement() {
+        return _element.get(this);
+    }
 }
 
 module.exports = InputControl;

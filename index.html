@@ -119,6 +119,11 @@
 
         });
 
+        function validateSingleControl() {
+            const inputControl = validator.controls.findByAttr('id', 'firstName');
+            inputControl && inputControl.validate();
+        }
+
         // validator.setRule()
 
     </script>

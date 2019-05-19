@@ -1,6 +1,9 @@
 const validationStates = require('./validation-states');
 const controlStates = require('./control-states');
-const {ExtraValidationStack} = require('./stacks');
+const {
+    ExtraValidationStack,
+    ControlsStack
+} = require('./stacks');
 const StandardError = require('./standard-error.class');
 const {
     InputControl
@@ -31,7 +34,7 @@ class PcFormValidator {
         _formElem.set(this, formElem);
 
         // Init stack of the controls
-        _stackControls.set(this, []);
+        _stackControls.set(this, new ControlsStack());
 
         // Init extra validation stack
         _extraValidationStack.set(this, new ExtraValidationStack());
@@ -107,6 +110,14 @@ class PcFormValidator {
             controlStates,
             StandardError
         };
+    }
+
+    /**
+     * @desc Returns stack of the controls
+     * @return {ControlsStack}
+     */
+    get controls() {
+        return _stackControls.get(this);
     }
 
 }

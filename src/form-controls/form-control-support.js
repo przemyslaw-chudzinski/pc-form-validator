@@ -1,4 +1,5 @@
 const StandardError = require('../standard-error.class');
+const cssClasses = require('../css-classes');
 
 const validateState = (state, stack = {}) => {
     const result = Object.values(stack).some(s => s === state);
@@ -8,7 +9,7 @@ const validateState = (state, stack = {}) => {
 };
 
 const clearErrorLabels = (control) => {
-    const errorLabels = control.parentNode.querySelectorAll('span.error-label');
+    const errorLabels = control.parentNode.querySelectorAll('span.' + cssClasses.errorLabel);
     errorLabels.length && [].forEach.call(errorLabels, lbl => lbl.remove());
 };
 
@@ -17,7 +18,7 @@ const createErrorLabel = error => {
         throw new Error('error must an instance of the StandardError class');
     }
     const errorLabel = document.createElement('span');
-    errorLabel.classList.add('error-label');
+    errorLabel.classList.add(cssClasses.errorLabel);
     errorLabel.innerText = error.message;
     return errorLabel;
 };
